@@ -1,8 +1,9 @@
 EXTRA_CFLAGS = 
 
 #CC = gcc
+CC ?= gcc
 
-CFLAGS = -g -O2 -Wall $(EXTRA_CFLAGS)
+CFLAGS = -g -O2 -Wall $(EXTRA_CFLAGS) -Wno-address-of-packed-member
 # For ARM:
 # CFLAGS =  -Wall $(EXTRA_CFLAGS)
 LDFLAGS = 

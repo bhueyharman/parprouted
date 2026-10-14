@@ -27,7 +27,8 @@
 
 #include "parprouted.h"
 
-
+#if defined(__ANDROID__)
+    // Android-specific code
 // ===================
 /*
  * Ethernet Address Resolution Protocol.
@@ -36,13 +37,19 @@
  * to resolving internet addresses.  Field names used correspond to
  * RFC 826.
  */
-struct	ether_arp {
-	struct	arphdr ea_hdr;		/* fixed-size header */
-	u_int8_t arp_sha[ETH_ALEN];	/* sender hardware address */
-	u_int8_t arp_spa[4];		/* sender protocol address */
-	u_int8_t arp_tha[ETH_ALEN];	/* target hardware address */
-	u_int8_t arp_tpa[4];		/* target protocol address */
+struct ether_arp {
+    struct  arphdr ea_hdr;          /* fixed-size header */
+    u_int8_t arp_sha[ETH_ALEN];     /* sender hardware address */
+    u_int8_t arp_spa[4];            /* sender protocol address */
+    u_int8_t arp_tha[ETH_ALEN];     /* target hardware address */
+    u_int8_t arp_tpa[4];            /* target protocol address */
 };
+//#elif defined(__linux__)
+    // Standard Linux-specific code (not Android)
+/* already included in netinet.h/if_ether.h */
+//struct	ether_arp;
+#endif
+
 #define	arp_hrd	ea_hdr.ar_hrd
 #define	arp_pro	ea_hdr.ar_pro
 #define	arp_hln	ea_hdr.ar_hln
@@ -414,7 +421,8 @@ void *arp(char *ifname)
 	  k_arpreq.arp_flags = ATF_COM;
 	  if (option_arpperm)
 	      k_arpreq.arp_flags = k_arpreq.arp_flags | ATF_PERM;
-	  strncpy(k_arpreq.arp_dev, ifname, sizeof(k_arpreq.arp_dev));
+//	  strncpy(k_arpreq.arp_dev, ifname, sizeof(k_arpreq.arp_dev));
+	  snprintf(k_arpreq.arp_dev, sizeof(k_arpreq.arp_dev), "%s", ifname);
 
 	  k_arpreq.arp_pa.sa_family = AF_INET;
 	  sin = (struct sockaddr_in *) &k_arpreq.arp_pa;
